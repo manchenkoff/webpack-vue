@@ -1,3 +1,9 @@
+/*!
+ * Created by Artyom Manchenkov
+ * artyom@manchenkoff.me
+ * manchenkoff.me © 2019
+ */
+
 html {
   background-image: url('../img/background.jpg'); // will be optimized
   background-size: cover;
@@ -6,12 +12,12 @@ html {
 .block {
   text-align: center;
   color: #ffffff;
-  margin: 130px auto;
+  margin: 70px auto;
 }
 
 .icon {
-  width: 256px;
-  height: 256px;
+  width: 128px;
+  height: 128px;
   display: inline-block;
   margin: 0 15px;
 }

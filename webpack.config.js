@@ -1,101 +1,138 @@
-const path                      = require('path');
-const MiniCssExtractPlugin      = require("mini-css-extract-plugin");
-const OptimizeCSSAssetsPlugin   = require("optimize-css-assets-webpack-plugin");
-const CopyWebpackPlugin         = require('copy-webpack-plugin');
-const ImageminPlugin            = require('imagemin-webpack-plugin').default;
+// import plugins
+const path = require('path');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+const ImageminPlugin = require('imagemin-webpack-plugin').default;
 
-module.exports = {
-    // base source path
-    context: path.resolve(__dirname, 'src'),
+/**
+ * Base webpack configuration
+ *
+ * @param env -> env parameters
+ * @param argv -> CLI arguments, 'argv.mode' is the current webpack mode (development | production)
+ * @returns object
+ */
+module.exports = (env, argv) => {
+    return {
+        // absolute path to the base directory
+        context: path.resolve(__dirname, "src"),
 
-    // entry file names to compile
-    entry: {
-        app: [
-            './js/main.js',
-            './scss/main.scss'
-        ]
-    },
+        // entry files to compile (relative to the base dir)
+        entry: [
+            "./js/app.js",
+            "./scss/app.scss",
+        ],
 
-    // compiled files path
-    output: {
-        filename: "js/[name].js",
-        path: path.resolve(__dirname, 'dist'),
-        publicPath: "../"
-    },
+        // enable development source maps
+        // * will be overwritten by 'source-maps' in production mode
+        devtool: "inline-source-map",
 
-    // enable source maps
-    devtool: 'inline-source-map',
+        // path to store compiled JS bundle
+        output: {
+            // bundle relative name
+            filename: "js/app.js",
+            // base build directory
+            path: path.resolve(__dirname, "dist"),
+            // path to build relative asset links
+            publicPath: "../"
+        },
 
-    // directory for starting webpack dev server
-    devServer: {
-        contentBase: './'
-    },
+        // plugins configurations
+        plugins: [
+            // clean 'dist' directory
+            new CleanWebpackPlugin(),
 
-    // connect other plugins
-    plugins: [
-        new MiniCssExtractPlugin({filename: "./css/[name].css"}),
-        new CopyWebpackPlugin([{from: './img/static/', to: './img/static/'}]),
-        new ImageminPlugin({ test: /\.(jpe?g|png|gif)$/i })
-    ],
+            // save compiled SCSS into separated CSS file
+            new MiniCssExtractPlugin({
+                filename: "css/style.css"
+            }),
 
-    // optimizing configuration
-    optimization: {
-        minimizer: [
-            new OptimizeCSSAssetsPlugin({}),
-        ]
-    },
+            // copy static assets directory
+            new CopyPlugin([
+                {from: 'static', to: 'static'}
+            ]),
 
-    // setting up file extensions handlers
-    module: {
-        rules: [
-            // Styles loader
-            {
-                test: /\.(sa|sc|c)ss$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    'sass-loader',
-                ],
-            },
-            // Image loader (for styles)
-            {
-                test: /\.(png|jpe?g|gif)$/,
-                loaders: [
-                    {
-                        loader: 'file-loader',
-                        options: {name: '[path][name].[ext]'},
-                    },
-                    {
-                        loader: 'img-loader',
-                        options: {
-                            plugins: [
-                                require('imagemin-gifsicle')({
-                                    interlaced: false
-                                }),
-                                require('imagemin-mozjpeg')({
+            // image optimization
+            new ImageminPlugin({
+                // disable for dev builds
+                disable: argv.mode !== 'production',
+                test: /\.(jpe?g|png|gif)$/i,
+                pngquant: {quality: '70-85'},
+                optipng: {optimizationLevel: 9}
+            }),
+        ],
+
+        // production mode optimization
+        optimization: {
+            minimizer: [
+                // CSS optimizer (JS optimized by default)
+                new OptimizeCSSAssetsPlugin(),
+            ],
+        },
+
+        // custom loaders configuration
+        module: {
+            rules: [
+                // styles loader
+                {
+                    test: /\.(sa|sc|c)ss$/,
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        "css-loader",
+                        "sass-loader"
+                    ],
+                },
+
+                // images loader
+                {
+                    test: /\.(png|jpe?g|gif)$/,
+                    loaders: [
+                        {
+                            loader: "file-loader",
+                            options: {
+                                name: "img/[name].[ext]"
+                            }
+                        },
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                                disable: argv.mode !== 'production',
+                                mozjpeg: {
                                     progressive: true,
-                                    arithmetic: false
-                                }),
-                                require('imagemin-pngquant')({
-                                    floyd: 0.5,
-                                    speed: 2
-                                }),
-                                require('imagemin-svgo')({
-                                    plugins: [
-                                        {removeTitle: true},
-                                        {convertPathData: false}
-                                    ]
-                                })
-                            ]
-                        }
-                    }
-                ]
-            },
-            // SVG converter into 'data:image'
-            {
-                test: /\.svg$/,
-                loader: 'svg-url-loader',
-            },
-        ]
-    }
+                                    quality: 65
+                                },
+                                pngquant: {
+                                    quality: '65-90',
+                                    speed: 4
+                                },
+                                optipng: {enabled: false},
+                                gifsicle: {interlaced: false},
+                                webp: {quality: 75}
+                            }
+                        },
+                    ],
+                },
+
+                // fonts loader
+                {
+                    test: /\.(woff|woff2|eot|ttf|otf)$/,
+                    use: [
+                        {
+                            loader: "file-loader",
+                            options: {
+                                name: "fonts/[name].[ext]"
+                            }
+                        },
+                    ],
+                },
+
+                // svg inline 'data:image' loader
+                {
+                    test: /\.svg$/,
+                    loader: "svg-url-loader"
+                },
+            ]
+        },
+    };
 };
