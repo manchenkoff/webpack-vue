@@ -1,19 +1,34 @@
 # Webpack 4 app template
 
+This project contains preconfigured Webpack 4 to work with the following tasks:
+
+- Compile `SCSS` to `CSS`
+- Optimize images (`*.png`, `*.jpeg`, `*.gif`)
+- Convert `SVG` into inline `'data:image'` format
+- Fonts loader
+- Automatic copy `static` directory to the `dist` directory
+- Production optimization (styles, JavaScript, images)
+- Build source maps
+
 ### Installation
 
-1. Execute command from root directory
+- Execute a command from the root directory
 ```
 npm install
 ```
-2. Use '`index.html`' as home page
-3. Edit '`src/js/app.js`' & '`src/scss/app.scss`'
-4. **Good luck!**
+- Use '`index.html`' as home page
+- Write Your own JavaScript in the file: `src/js/app.js`
+- Also Your styles may be placed in the SCSS file: `src/scss/app.scss`
+- Then run the following command to build `dev` bundle:
+```
+npm run build
+``` 
+- **Good luck!**
 
 ### Tasks
 
-1. Build sources - ```npm run build```
-2. Start file watcher for recompiling - ```npm run watch```
-3. Start webpack dev server - ```npm run start```
-4. Build sources for production (**with optimization**) - ```npm run production```
-5. Clean '`dist`' folder - ```npm run clear```
+- Build sources - ```npm run build```
+- Start file watcher for recompiling - ```npm run watch```
+- Start webpack dev server - ```npm run start```
+- Build sources for production (**with optimization**) - ```npm run production```
+- Clean '`dist`' folder - ```npm run clear```
