@@ -1,5 +1,7 @@
 # Webpack 4 app template
 
+### Description
+
 This project contains preconfigured Webpack 4 to work with the following tasks:
 
 - Compile `SCSS` to `CSS`
@@ -24,6 +26,14 @@ npm install
 npm run build
 ``` 
 - **Good luck!**
+
+### Project structure
+
+- **src**: Project sources root
+    - **img**: Images and icons used in your styles
+    - **js**: JavaScript code-base for your application
+    - **scss**: Styles sources (may contain structure what you like)
+    - **static**: Images and media-files which uses statically (will be copied to the `dist` directory), ex: uses in the HTML
 
 ### Tasks
 
