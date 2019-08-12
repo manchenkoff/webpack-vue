@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 /**
  * Base webpack configuration
@@ -14,7 +15,9 @@ const ImageminPlugin = require('imagemin-webpack-plugin').default;
  * @returns object
  */
 module.exports = (env, argv) => {
-    return {
+    let isProduction = (argv.mode === 'production');
+
+    let config = {
         // absolute path to the base directory
         context: path.resolve(__dirname, "src"),
 
@@ -40,9 +43,6 @@ module.exports = (env, argv) => {
 
         // plugins configurations
         plugins: [
-            // clean 'dist' directory
-            new CleanWebpackPlugin(),
-
             // save compiled SCSS into separated CSS file
             new MiniCssExtractPlugin({
                 filename: "css/style.css"
@@ -56,11 +56,14 @@ module.exports = (env, argv) => {
             // image optimization
             new ImageminPlugin({
                 // disable for dev builds
-                disable: argv.mode !== 'production',
+                disable: !isProduction,
                 test: /\.(jpe?g|png|gif)$/i,
                 pngquant: {quality: '70-85'},
                 optipng: {optimizationLevel: 9}
             }),
+
+            // compile .vue components
+            new VueLoaderPlugin(),
         ],
 
         // production mode optimization
@@ -69,6 +72,13 @@ module.exports = (env, argv) => {
                 // CSS optimizer (JS optimized by default)
                 new OptimizeCSSAssetsPlugin(),
             ],
+        },
+
+        // compile .vue into the js files
+        resolve: {
+            alias: {
+                'vue$': 'vue/dist/vue.esm.js'
+            }
         },
 
         // custom loaders configuration
@@ -97,7 +107,7 @@ module.exports = (env, argv) => {
                         {
                             loader: 'image-webpack-loader',
                             options: {
-                                disable: argv.mode !== 'production',
+                                disable: !isProduction,
                                 mozjpeg: {
                                     progressive: true,
                                     quality: 65
@@ -132,7 +142,23 @@ module.exports = (env, argv) => {
                     test: /\.svg$/,
                     loader: "svg-url-loader"
                 },
+
+                // vue components loader
+                {
+                    test: /\.vue$/,
+                    loader: 'vue-loader'
+                }
             ]
         },
     };
+
+    // PRODUCTION ONLY configuration
+    if (isProduction) {
+        config.plugins.push(
+            // clean 'dist' directory
+            new CleanWebpackPlugin()
+        );
+    }
+
+    return config;
 };

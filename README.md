@@ -1,14 +1,15 @@
-# Webpack 4 app template
+# Webpack 4 Vue.js app template
 
 ### Description
 
 This project contains preconfigured Webpack 4 to work with the following tasks:
 
-- Compile `SCSS` to `CSS`
-- Optimize images (`*.png`, `*.jpeg`, `*.gif`)
-- Convert `SVG` into inline `'data:image'` format
+- Compiles `*.vue` components
+- Compiles `SCSS` to `CSS`
+- Optimizes images (`*.png`, `*.jpeg`, `*.gif`)
+- Converts `SVG` into inline `'data:image'` format
 - Fonts loader
-- Automatic copy `static` directory to the `dist` directory
+- Automatic copy `src/static` directory to the `dist/static` directory
 - Production optimization (styles, JavaScript, images)
 - Build source maps
 
@@ -32,8 +33,9 @@ npm run build
 - **src**: Project sources root
     - **img**: Images and icons used in your styles
     - **js**: JavaScript code-base for your application
+        - **components**: Vue.js components
     - **scss**: Styles sources (may contain structure what you like)
-    - **static**: Images and media-files which uses statically (will be copied to the `dist` directory), ex: uses in the HTML
+    - **static**: Images and media-files which uses statically (will be copied to the `dist/static` directory), ex: uses in the HTML
 
 ### Tasks
 
