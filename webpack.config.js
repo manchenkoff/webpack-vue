@@ -50,9 +50,11 @@ module.exports = (env, argv) => {
             }),
 
             // copy static assets directory
-            new CopyPlugin([
-                {from: 'static', to: 'static'}
-            ]),
+            new CopyPlugin({
+                patterns: [
+                    {from: 'static', to: 'static'},
+                ],
+            }),
 
             // image optimization
             new ImageminPlugin({
